@@ -1,5 +1,6 @@
 package by.search.app.googlesearch.data.api
 
+import by.search.app.googlesearch.common.*
 import by.search.app.googlesearch.data.entity.search.SearchResponse
 import io.reactivex.Single
 import retrofit2.http.GET
@@ -9,10 +10,10 @@ interface GoogleSearchService {
 
     @GET("/customsearch/v1")
     fun search(
-        @Query("key") appApiKey: String,
-        @Query("cx") searchApiKey: String,
-        @Query("num") numberOfSearchResult: Int,
-        @Query("q") inputString: String,
-        @Query("startIndex") startIndex: Int): Single<SearchResponse>
+        @Query(KEY) appApiKey: String,
+        @Query(CX_KEY) searchApiKey: String,
+        @Query(NUM) numberOfSearchResult: Int,
+        @Query(QUERY) inputString: String,
+        @Query(START) startIndex: Int): Single<SearchResponse>
 
 }

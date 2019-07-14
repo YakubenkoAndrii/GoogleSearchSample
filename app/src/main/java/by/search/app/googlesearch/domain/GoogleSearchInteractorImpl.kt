@@ -22,8 +22,8 @@ class GoogleSearchInteractorImpl(
 
     override fun search(inputString: String): Single<MutableList<SearchItem>> =
         Single.zip(
-            remoteRepository.search(inputString, 0),
-            remoteRepository.search(inputString, 10),
+            remoteRepository.search(inputString, 1),
+            remoteRepository.search(inputString, 11),
             BiFunction<SearchResponse, SearchResponse,
                     MutableList<SearchItem>>
             { t1, t2 ->
