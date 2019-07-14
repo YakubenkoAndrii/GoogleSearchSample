@@ -95,6 +95,11 @@ class SearchFragment : BaseFragment() {
         }
     }
 
+    override fun onDestroyView() {
+        viewModel.removeObservers(this)
+        super.onDestroyView()
+    }
+
     companion object {
         fun newInstance(isTablet: Boolean,
                         isPortraitOrientation: Boolean) = SearchFragment().apply {
