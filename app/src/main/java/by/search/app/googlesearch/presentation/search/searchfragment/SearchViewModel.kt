@@ -10,6 +10,7 @@ import by.search.app.googlesearch.data.entity.search.SearchResponse
 import by.search.app.googlesearch.domain.GoogleSearchInteractor
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 import io.reactivex.disposables.Disposables
 import okhttp3.ResponseBody
 import org.koin.core.inject
@@ -17,7 +18,7 @@ import org.koin.core.inject
 class SearchViewModel : BaseViewModel() {
 
     private val interactor by inject<GoogleSearchInteractor>()
-    private var searchDisposable = CompositeDisposable()
+    private lateinit var searchDisposable: Disposable
     val isProgress = MutableLiveData<Boolean>()
     var errorMessage = MutableLiveData<String>()
     var searchItems = MutableLiveData<MutableList<SearchItem>>()
@@ -41,21 +42,16 @@ class SearchViewModel : BaseViewModel() {
 
     fun search(inputString: String) {
         actionSearch = interactor.search(inputString)
-        if (searchDisposable.isDisposed) {
-            searchDisposable = CompositeDisposable()
-        } else {
-            searchDisposable.add(actionSearch
-                .doOnSubscribe { isProgress.postValue(true) }
-                .doAfterTerminate { isProgress.postValue(false) }
-                .subscribe(
-                    {
-                        searchItems.value = it
-                    },
-                    {
-                        errorMessage.value = it.localizedMessage
-                    })
-            )
-        }
+        searchDisposable = actionSearch
+            .doOnSubscribe { isProgress.postValue(true) }
+            .doAfterTerminate { isProgress.postValue(false) }
+            .subscribe(
+                {
+                    searchItems.value = it
+                },
+                {
+                    errorMessage.value = it.localizedMessage
+                })
     }
 
     fun terminateActionSearch() {

@@ -10,9 +10,8 @@ import by.search.app.googlesearch.common.IS_PORTRAIT_ORIENTATION
 import by.search.app.googlesearch.common.IS_TABLET
 import by.search.app.googlesearch.common.baseclasses.BaseFragment
 import by.search.app.googlesearch.common.extentions.show
-import by.search.app.googlesearch.common.extentions.track
 import com.jakewharton.rxbinding2.widget.RxTextView
-import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.fr_search_page.*
 import org.koin.android.viewmodel.ext.android.viewModel
 import java.util.concurrent.TimeUnit
@@ -23,6 +22,7 @@ class SearchFragment : BaseFragment() {
     private val router by lazy { activity as SearchRouter }
     private val viewModel: SearchViewModel by viewModel()
     private val searchResultAdapter = SearchResultAdapter()
+    private lateinit var rxTextViewDisposable: Disposable
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -33,7 +33,7 @@ class SearchFragment : BaseFragment() {
             tvSearch.setSelection(tvSearch.text.length)
         })
 
-        RxTextView.textChanges(tvSearch)
+        rxTextViewDisposable = RxTextView.textChanges(tvSearch)
             .skipInitialValue()
             .skip(1)
             .debounce(1000, TimeUnit.MILLISECONDS)
@@ -41,7 +41,6 @@ class SearchFragment : BaseFragment() {
             .distinctUntilChanged()
             .filter { source -> source.isNotBlank() && source.length > 1 }
             .subscribe { viewModel.search(it) }
-            .track(CompositeDisposable())
 
         initProgressContainer()
         initErrorInitializer()
@@ -96,6 +95,7 @@ class SearchFragment : BaseFragment() {
     }
 
     override fun onDestroyView() {
+        rxTextViewDisposable.dispose()
         viewModel.removeObservers(this)
         super.onDestroyView()
     }
