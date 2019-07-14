@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">GoogleSearch</string>
+    <string name="str_search_field_hint">Search</string>
+</resources>
