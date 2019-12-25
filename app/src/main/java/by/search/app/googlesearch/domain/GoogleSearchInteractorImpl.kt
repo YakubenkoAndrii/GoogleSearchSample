@@ -30,7 +30,7 @@ class GoogleSearchInteractorImpl(
                 (t1.items + t2.items).toMutableList()
             })
             .map { result ->
-                result.map {
+                result.forEach {
                     if (it.description.isNotEmpty() && it.description.length > 30) {
                         it.description = it.description.substring(0, 30)
                     }
